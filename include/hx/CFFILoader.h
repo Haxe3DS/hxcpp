@@ -61,7 +61,9 @@
 
 #endif
 
+#if !defined(HX_NX)
 #include <dlfcn.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <memory.h>
@@ -83,6 +85,8 @@ EXPORT void hx_set_loader(ResolveProc inProc)
    sResolveProc = inProc;
 }
 }
+
+#ifdef 
 
 
 

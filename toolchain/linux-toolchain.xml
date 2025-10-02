@@ -76,8 +76,8 @@
          <flag value="-DHX_NX"/>
 
          <!-- HashLink flags -->
-         <flag value="-DHL_CONSOLE"/>
-         <flag value="-DHL_NX"/>
+         <!-- <flag value="-DHL_CONSOLE"/>
+         <flag value="-DHL_NX"/> -->
 
          <flag value='-ffunction-sections' />
          <flag value='-fexceptions' />
