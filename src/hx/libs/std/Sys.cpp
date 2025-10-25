@@ -281,7 +281,7 @@ String _hx_std_sys_string()
 #elif defined(EPPC)
    return HX_CSTRING("EPPC");
 #elif defined(HX_NX)
-   return HX_CSTRING("NX");
+   return HX_CSTRING("HorizonOS");
 #else
 #error Unknow system string
 #endif

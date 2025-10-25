@@ -46,6 +46,11 @@ typedef int SocketLen;
 #  include <netinet/tcp.h>
 #   include <arpa/inet.h>
 #   include <unistd.h>
+
+#ifdef HX_NX
+#define __BSD_VISIBLE 1
+#endif
+
 #   include <netdb.h>
 #   include <fcntl.h>
 #   include <errno.h>
@@ -390,15 +395,15 @@ int _hx_std_host_resolve( String host )
       struct hostent *h = 0;
       hx::strbuf hostBuf;
 
-#   if defined(NEKO_WINDOWS) || defined(NEKO_MAC) || defined(BLACKBERRY) || defined(EMSCRIPTEN)
+#   if defined(NEKO_WINDOWS) || defined(NEKO_MAC) || defined(BLACKBERRY) || defined(EMSCRIPTEN) || defined(HX_NX)
       h = gethostbyname(host.utf8_str(&hostBuf));
 #   else
       struct hostent hbase;
       char buf[1024];
       int errcode;
-      #if !defined(HX_NX)
+      // #if !defined(HX_NX)
       gethostbyname_r(host.utf8_str(&hostBuf),&hbase,buf,1024,&h,&errcode);
-      #endif
+      // #endif
 #   endif
       if( !h ) {
          hx::ExitGCFreeZone();
@@ -530,13 +535,13 @@ String _hx_std_host_to_string_ipv6( Array<unsigned char> ip )
 **/
 String _hx_std_host_reverse( int host )
 {
-   #if defined(HX_NX)
-      return String();
-   #else
+   // #if defined(HX_NX)
+   //    return String();
+   // #else
       struct hostent *h = 0;
       unsigned int ip = host;
       hx::EnterGCFreeZone();
-      #if defined(NEKO_WINDOWS) || defined(NEKO_MAC) || defined(ANDROID) || defined(BLACKBERRY) || defined(EMSCRIPTEN)
+      #if defined(NEKO_WINDOWS) || defined(NEKO_MAC) || defined(ANDROID) || defined(BLACKBERRY) || defined(EMSCRIPTEN) || defined(HX_NX)
       h = gethostbyaddr((char *)&ip,4,AF_INET);
       #else
       struct hostent htmp;
@@ -548,20 +553,20 @@ String _hx_std_host_reverse( int host )
       if( !h )
          return String();
       return String( h->h_name );
-   #endif
+   // #endif
 }
 
 String _hx_std_host_reverse_ipv6( Array<unsigned char> host )
 {
-   #if defined(HX_NX)
-      return String();
-   #else
+   // #if defined(HX_NX)
+   //    return String();
+   // #else
       if (!host.mPtr || host->length!=16)
          return String();
 
       struct hostent *h = 0;
       hx::EnterGCFreeZone();
-      #if defined(NEKO_WINDOWS) || defined(NEKO_MAC) || defined(ANDROID) || defined(BLACKBERRY) || defined(EMSCRIPTEN)
+      #if defined(NEKO_WINDOWS) || defined(NEKO_MAC) || defined(ANDROID) || defined(BLACKBERRY) || defined(EMSCRIPTEN) || defined(HX_NX)
       h = gethostbyaddr((char *)&host[0],16,AF_INET6);
       #else
       struct hostent htmp;
@@ -573,7 +578,7 @@ String _hx_std_host_reverse_ipv6( Array<unsigned char> host )
       if( !h )
          return String();
       return String( h->h_name );
-   #endif
+   // #endif
 }
 
 
