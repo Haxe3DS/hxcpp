@@ -578,7 +578,7 @@ class BuildTool
                   first = false;
                   Log.lock();
                   Log.println("");
-                  Log.info("\x1b[33;1mCompiling group: " + group.mId + "\x1b[0m");
+                  Log.info("\x1b[33;1mCompiling group: " + group.mId + " (" + to_be_compiled.length + " file" + (to_be_compiled.length==1 ? "" : "s") + ")\x1b[0m");
                   var message = "\x1b[1m" + (nvcc ? getNvcc() : mCompiler.mExe) + "\x1b[0m";
                   var flags = group.mCompilerFlags;
                   if (!nvcc)
@@ -614,10 +614,16 @@ class BuildTool
          } : null;
 
          Profile.push("compile");
+
+         var compile_progress = null;
+         if (!Log.verbose) {
+            compile_progress = new Progress(0,to_be_compiled.length);
+         }
+
          if (threadPool==null)
          {
             for(file in to_be_compiled)
-               mCompiler.compile(file,-1,groupHeader,pchStamp);
+               mCompiler.compile(file,-1,groupHeader,pchStamp,compile_progress);
          }
          else
          {
@@ -633,7 +639,7 @@ class BuildTool
                         break;
                      var file = to_be_compiled[index];
 
-                     compiler.compile(file,threadId,groupHeader,pchStamp);
+                     compiler.compile(file,threadId,groupHeader,pchStamp,compile_progress);
                   }
             });
          }
@@ -1928,7 +1934,7 @@ class BuildTool
          defines.set("HXCPP_LINUX_ARM64", "1");
          defines.set("HXCPP_NO_M32", "1");
          defines.set("BINDIR","Switch");
-         Log.println(" - Assuming ARM64 for Nintendo Switch...");
+         Log.println("Using toolchain for Nintendo Switch");
       }
 
       else if (defines.exists("android"))
