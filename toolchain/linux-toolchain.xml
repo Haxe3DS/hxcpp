@@ -26,7 +26,7 @@
       </section>
 
       <section if="nx">
-         <!-- Nintendo Switch DevKitARM paths -->
+         <!-- Nintendo Switch DevKitA64 paths -->
          <path name="${DEVKITPRO}/devkitA64/bin/" />
          <path name="${DEVKITPRO}/tools/bin/" />
          <set name='CXX' value='aarch64-none-elf-g++' />
@@ -63,13 +63,13 @@
          <flag value='-mtune=cortex-a57' />
          <flag value='-fPIE' />
          <flag value='-Wall' />
-         <flag value='-Wreorder' />
+         <!-- <flag value='-Wreorder' />
          <flag value='-Wstrict-aliasing' />
          <flag value='-Winvalid-offsetof' />
          <flag value='-Wsign-compare' />
-         <flag value='-Wunknown-pragmas' />
+         <flag value='-Wunknown-pragmas' /> -->
          <flag value='-D__SWITCH__' />
-         <flag value='-D__NX__' /> <!-- Mmm... -->
+         <flag value='-D__NX__' />
          <flag value='-D__TM_GMTOFF=tm_gmtoff'/>
          <flag value='-D__POSIX_VISIBLE'/>
          <flag value='-D__BSD_VISIBLE'/>

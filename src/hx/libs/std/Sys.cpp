@@ -62,6 +62,7 @@
 
 #ifdef HX_NX
 #include <sys/wait.h>
+#include <switch/arm/counter.h>
 #endif
 
 #ifndef CLK_TCK
@@ -85,7 +86,7 @@
 
 String _hx_std_get_env( String v )
 {
-   #ifdef HX_WINRT
+   #ifdef defined(HX_WINRT) || defined(HX_NX)
       return String();
    #else
       #if defined(NEKO_WINDOWS) && defined(HX_SMART_STRINGS)
@@ -104,7 +105,7 @@ String _hx_std_get_env( String v )
 **/
 void _hx_std_put_env( String e, String v )
 {
-#ifdef HX_WINRT
+#ifdef defined(HX_WINRT) || defined(HX_NX)
    // Do nothing
 #elif defined(NEKO_WINDOWS)
    String set = e + HX_CSTRING("=") + (v != null()?v:"");
@@ -116,12 +117,10 @@ void _hx_std_put_env( String e, String v )
    #endif
       putenv(set.utf8_str());
 #else
-   #if !defined(HX_NX)
    if (v == null())
       unsetenv(e.utf8_str());
    else
       setenv(e.utf8_str(),v.utf8_str(),1);
-   #endif
 #endif
 }
 
@@ -202,7 +201,12 @@ String _hx_std_get_cwd()
    return HX_CSTRING("ms-appdata:///local/");
    #elif defined(EPPC)
    return String();
-   #else
+   #elif defined(HX_NX)
+   if (_hx_std_sys_exists(HX_CSTRING("sdmc:/"))) {
+      return HX_CSTRING("sdmc:/");
+   }
+   return String(); // Idk, Atmosphere from SysMMC without a SD?
+#else
 #ifdef NEKO_WINDOWS
    wchar_t buf[261];
    int l;
@@ -234,7 +238,7 @@ String _hx_std_get_cwd()
 **/
 bool _hx_std_set_cwd( String d )
 {
-   #if !defined(HX_WINRT) && !defined(EPPC)
+   #if !defined(HX_WINRT) && !defined(EPPC) && !defined(HX_NX)
 #ifdef NEKO_WINDOWS
    return SetCurrentDirectoryW(d.wchar_str()) == 0;
 #else
@@ -308,7 +312,7 @@ bool _hx_std_sys_is64()
 **/
 int _hx_std_sys_command( String cmd )
 {
-   #if defined(HX_WINRT) || defined(EMSCRIPTEN) || defined(EPPC) || defined(IPHONE) || defined(APPLETV) || defined(HX_APPLEWATCH)
+   #if defined(HX_WINRT) || defined(EMSCRIPTEN) || defined(EPPC) || defined(IPHONE) || defined(APPLETV) || defined(HX_APPLEWATCH) || defined(HX_NX)
    return -1;
    #else
    if( !cmd.raw_ptr() || !cmd.length )
@@ -653,6 +657,8 @@ double _hx_std_sys_cpu_time()
 {
 #if defined(HX_WINRT) && !defined(_XBOX_ONE)
     return ((double)GetTickCount64()/1000.0);
+#elif defined(HX_NX)
+   return ((double)armTicksToNs(armGetSystemTick()) / 1.0e6); // Use directy the libnx API
 #elif defined(NEKO_WINDOWS)
    FILETIME unused;
    FILETIME stime;
@@ -912,7 +918,7 @@ int _hx_std_sys_get_pid()
 {
 #   ifdef NEKO_WINDOWS
    return (int)(GetCurrentProcessId());
-#elif defined(EPPC)
+#elif defined(EPPC) || defined(HX_NX)
    return (1);
 #   else
    return (getpid());
