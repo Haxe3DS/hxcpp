@@ -86,7 +86,7 @@
 
 String _hx_std_get_env( String v )
 {
-   #ifdef defined(HX_WINRT) || defined(HX_NX)
+   #ifdef HX_WINRT || defined(HX_NX)
       return String();
    #else
       #if defined(NEKO_WINDOWS) && defined(HX_SMART_STRINGS)
@@ -105,7 +105,7 @@ String _hx_std_get_env( String v )
 **/
 void _hx_std_put_env( String e, String v )
 {
-#ifdef defined(HX_WINRT) || defined(HX_NX)
+#ifdef defined(HX_WINRT)
    // Do nothing
 #elif defined(NEKO_WINDOWS)
    String set = e + HX_CSTRING("=") + (v != null()?v:"");
@@ -117,10 +117,12 @@ void _hx_std_put_env( String e, String v )
    #endif
       putenv(set.utf8_str());
 #else
+   #if !defined(HX_NX)
    if (v == null())
       unsetenv(e.utf8_str());
    else
       setenv(e.utf8_str(),v.utf8_str(),1);
+   #endif
 #endif
 }
 
