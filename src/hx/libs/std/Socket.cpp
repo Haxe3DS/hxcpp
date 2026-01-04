@@ -19,13 +19,13 @@
    #include <Ws2tcpip.h>
 #endif
 
-#ifdef HX_NX
-#include <sys/unistd.h>
-#include <sys/select.h>
-#include <sys/time.h>
-#include <sys/types.h>
-#define INADDR_NONE ((in_addr_t)0xffffffff)
-#endif
+// #ifdef HX_NX
+// #include <sys/unistd.h>
+// #include <sys/select.h>
+// #include <sys/time.h>
+// #include <sys/types.h>
+// #define INADDR_NONE ((in_addr_t)0xffffffff)
+// #endif
 
 #define DYNAMIC_INET_FUNCS 1
    typedef WINSOCK_API_LINKAGE INT(WSAAPI *inet_pton_func)(INT Family, PCSTR pszAddrString, PVOID pAddrBuf);
@@ -49,6 +49,11 @@ typedef int SocketLen;
 
 #ifdef HX_NX
 #define __BSD_VISIBLE 1
+#include <sys/unistd.h>
+#include <sys/select.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#define INADDR_NONE ((in_addr_t)0xffffffff)
 #endif
 
 #   include <netdb.h>
@@ -395,15 +400,15 @@ int _hx_std_host_resolve( String host )
       struct hostent *h = 0;
       hx::strbuf hostBuf;
 
-#   if defined(NEKO_WINDOWS) || defined(NEKO_MAC) || defined(BLACKBERRY) || defined(EMSCRIPTEN)
+#   if defined(NEKO_WINDOWS) || defined(NEKO_MAC) || defined(BLACKBERRY) || defined(EMSCRIPTEN) || defined(HX_NX)
       h = gethostbyname(host.utf8_str(&hostBuf));
 #   else
       struct hostent hbase;
       char buf[1024];
       int errcode;
-      #if !defined(HX_NX)
+      // #if !defined(HX_NX)
       gethostbyname_r(host.utf8_str(&hostBuf),&hbase,buf,1024,&h,&errcode);
-      #endif
+      // #endif
 #   endif
       if( !h ) {
          hx::ExitGCFreeZone();
@@ -535,13 +540,13 @@ String _hx_std_host_to_string_ipv6( Array<unsigned char> ip )
 **/
 String _hx_std_host_reverse( int host )
 {
-   #if defined(HX_NX)
+   // #if defined(HX_NX)
       return String();
-   #else
+   // #else
       struct hostent *h = 0;
       unsigned int ip = host;
       hx::EnterGCFreeZone();
-      #if defined(NEKO_WINDOWS) || defined(NEKO_MAC) || defined(ANDROID) || defined(BLACKBERRY) || defined(EMSCRIPTEN)
+      #if defined(NEKO_WINDOWS) || defined(NEKO_MAC) || defined(ANDROID) || defined(BLACKBERRY) || defined(EMSCRIPTEN) || defined(HX_NX)
       h = gethostbyaddr((char *)&ip,4,AF_INET);
       #else
       struct hostent htmp;
@@ -553,7 +558,7 @@ String _hx_std_host_reverse( int host )
       if( !h )
          return String();
       return String( h->h_name );
-   #endif
+   // #endif
 }
 
 String _hx_std_host_reverse_ipv6( Array<unsigned char> host )
@@ -673,18 +678,16 @@ void _hx_std_socket_listen( Dynamic o, int n )
 }
 
 #if defined(HX_NX)
-// Nintendo Switch doesn't have full POSIX select support
-// You'll need to use Nintendo Switch specific networking APIs
-
-// Define a minimal fd_set if needed for compatibility
 #ifndef FD_SETSIZE
 #define FD_SETSIZE 64
 #endif
 
+#if !defined(HX_NX)
 typedef struct
 {
    unsigned int fds_bits[FD_SETSIZE / 32];
 } fd_set;
+#endif
 
 // Basic macros if needed
 #define FD_ZERO(set) memset((set), 0, sizeof(fd_set))
@@ -770,9 +773,9 @@ static struct timeval *init_timeval( double f, struct timeval *t ) {
 **/
 Array<Dynamic> _hx_std_socket_select( Array<Dynamic> rs, Array<Dynamic> ws, Array<Dynamic> es, Dynamic timeout )
 {
-   #if defined(HX_NX)
+   // #if defined(HX_NX)
       return null();
-   #else
+   // #else
       SOCKET n = 0;
       fd_set rx, wx, ex;
       fd_set *ra, *wa, *ea;
@@ -803,7 +806,7 @@ Array<Dynamic> _hx_std_socket_select( Array<Dynamic> rs, Array<Dynamic> ws, Arra
       r[1] = make_array_result(ws,wa);
       r[2] = make_array_result(es,ea);
       return r;
-   #endif
+   // #endif
 }
 
 /**
@@ -812,9 +815,9 @@ Array<Dynamic> _hx_std_socket_select( Array<Dynamic> rs, Array<Dynamic> ws, Arra
 **/
 void _hx_std_socket_fast_select( Array<Dynamic> rs, Array<Dynamic> ws, Array<Dynamic> es, Dynamic timeout )
 {
-   #if defined(HX_NX)
+   // #if defined(HX_NX)
       return;
-   #else
+   // #else
       SOCKET n = 0;
       fd_set rx, wx, ex;
       fd_set *ra, *wa, *ea;
@@ -849,7 +852,7 @@ void _hx_std_socket_fast_select( Array<Dynamic> rs, Array<Dynamic> ws, Array<Dyn
       make_array_result_inplace(rs, ra);
       make_array_result_inplace(ws, wa);
       make_array_result_inplace(es, ea);
-   #endif
+   // #endif
 }
 
 /**

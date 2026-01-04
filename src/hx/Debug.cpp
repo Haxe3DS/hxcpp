@@ -480,11 +480,7 @@ HXCPP_EXTERN_CLASS_ATTRIBUTES void NullReference(const char *type, bool allowFix
       return;
 #endif
 
-#ifdef HXCPP_SL_DETAIL_NULL_REF
-   __hxcpp_dbg_checkedThrow(HX_CSTRING("Null [") + String(type) + HX_CSTRING("] Reference"));
-#else
-   __hxcpp_dbg_checkedThrow(HX_CSTRING("Null Object Reference"));
-#endif
+__hxcpp_dbg_checkedThrow(HX_CSTRING("Null Object Reference"));
 }
 
 
