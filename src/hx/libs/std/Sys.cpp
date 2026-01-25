@@ -21,7 +21,7 @@
 #ifndef EPPC
 #include <unistd.h>
 #include <dirent.h>
-#if defined(HX_NX)
+#if defined(HAXE3DS)
 #include <machine/termios.h>
 #else
 #include <termios.h>
@@ -32,9 +32,9 @@
 #include <limits.h>
 #ifndef ANDROID
 #include <locale.h>
-#if !defined(BLACKBERRY) && !defined(EPPC) && !defined(GCW0) && !defined(__GLIBC__) && !defined(HX_NX)
+#if !defined(BLACKBERRY) && !defined(EPPC) && !defined(GCW0) && !defined(__GLIBC__) && !defined(HAXE3DS)
 #include <xlocale.h>
-#elif defined(HX_NX)
+#elif defined(HAXE3DS)
 #include <locale.h>
 #endif
 #endif
@@ -60,13 +60,12 @@
    #include <sys/wait.h>
 #endif
 
-#ifdef HX_NX
-#include <sys/wait.h>
-#include <switch/arm/counter.h>
-#endif
-
 #ifndef CLK_TCK
    #define CLK_TCK   100
+#endif
+
+#ifdef HAXE3DS
+#include <3ds.h>
 #endif
 
 
@@ -86,7 +85,7 @@
 
 String _hx_std_get_env( String v )
 {
-   #ifdef HX_WINRT || defined(HX_NX)
+   #ifdef HX_WINRT || defined(HAXE3DS)
       return String();
    #else
       #if defined(NEKO_WINDOWS) && defined(HX_SMART_STRINGS)
@@ -117,7 +116,7 @@ void _hx_std_put_env( String e, String v )
    #endif
       putenv(set.utf8_str());
 #else
-   #if !defined(HX_NX)
+   #if !defined(HAXE3DS)
    if (v == null())
       unsetenv(e.utf8_str());
    else
@@ -138,6 +137,8 @@ void _hx_std_sys_sleep( double f )
    Sleep((DWORD)(f * 1000));
 #elif defined(EPPC)
 //TODO: Implement sys_sleep for EPPC
+#elif defined(HAXE3DS)
+   svcSleepThread((u64)(1e9 * f));
 #else
    {
       struct timespec t;
@@ -203,7 +204,7 @@ String _hx_std_get_cwd()
    return HX_CSTRING("ms-appdata:///local/");
    #elif defined(EPPC)
    return String();
-   #elif defined(HX_NX)
+   #elif defined(HAXE3DS)
    if (_hx_std_sys_exists(HX_CSTRING("sdmc:/"))) {
       return HX_CSTRING("sdmc:/");
    }
@@ -240,7 +241,7 @@ String _hx_std_get_cwd()
 **/
 bool _hx_std_set_cwd( String d )
 {
-   #if !defined(HX_WINRT) && !defined(EPPC) && !defined(HX_NX)
+   #if !defined(HX_WINRT) && !defined(EPPC) && !defined(HAXE3DS)
 #ifdef NEKO_WINDOWS
    return SetCurrentDirectoryW(d.wchar_str()) == 0;
 #else
@@ -286,8 +287,8 @@ String _hx_std_sys_string()
    return HX_CSTRING("Emscripten");
 #elif defined(EPPC)
    return HX_CSTRING("EPPC");
-#elif defined(HX_NX)
-   return HX_CSTRING("HorizonOS");
+#elif defined(HAXE3DS)
+   return HX_CSTRING("CTR");
 #else
 #error Unknow system string
 #endif
@@ -314,7 +315,7 @@ bool _hx_std_sys_is64()
 **/
 int _hx_std_sys_command( String cmd )
 {
-   #if defined(HX_WINRT) || defined(EMSCRIPTEN) || defined(EPPC) || defined(IPHONE) || defined(APPLETV) || defined(HX_APPLEWATCH) || defined(HX_NX)
+   #if defined(HX_WINRT) || defined(EMSCRIPTEN) || defined(EPPC) || defined(IPHONE) || defined(APPLETV) || defined(HX_APPLEWATCH) || defined(HAXE3DS)
    return -1;
    #else
    if( !cmd.raw_ptr() || !cmd.length )
@@ -659,8 +660,8 @@ double _hx_std_sys_cpu_time()
 {
 #if defined(HX_WINRT) && !defined(_XBOX_ONE)
     return ((double)GetTickCount64()/1000.0);
-#elif defined(HX_NX)
-   return ((double)armTicksToNs(armGetSystemTick()) / 1.0e6); // Use directy the libnx API
+#elif defined(HAXE3DS)
+   return ((double)svcGetSystemTick());
 #elif defined(NEKO_WINDOWS)
    FILETIME unused;
    FILETIME stime;
@@ -767,7 +768,7 @@ Array<String> _hx_std_sys_read_dir( String p )
 **/
 String _hx_std_file_full_path( String path )
 {
-#if defined(HX_WINRT) || defined(HX_NX)
+#if defined(HX_WINRT)
    return path;
 #elif defined(NEKO_WINDOWS)
    wchar_t buf[MAX_PATH+1];
@@ -775,7 +776,7 @@ String _hx_std_file_full_path( String path )
    if( GetFullPathNameW(path.wchar_str(&wbuf),MAX_PATH+1,buf,NULL) == 0 )
       return null();
    return String::create(buf);
-#elif defined(EPPC)
+#elif defined(EPPC) || defined(HAXE3DS)
    return path;
 #else
    char buf[PATH_MAX];
@@ -807,7 +808,7 @@ String _hx_std_sys_exe_path()
    if( _NSGetExecutablePath(path, &path_len) )
       return null();
    return String::create(path);
-#elif defined(EPPC) || defined(HX_NX)
+#elif defined(EPPC) || defined(HAXE3DS)
    return HX_CSTRING("");
 #else
    {
@@ -885,7 +886,7 @@ Array<String> _hx_std_sys_env()
 **/
 int _hx_std_sys_getch( bool b )
 {
-#if defined(HX_WINRT) || defined(EMSCRIPTEN) || defined(EPPC) || defined(HX_NX)
+#if defined(HX_WINRT) || defined(EMSCRIPTEN) || defined(EPPC) || defined(HAXE3DS)
    return 0;
 #elif defined(NEKO_WINDOWS)
    hx::EnterGCFreeZone();
@@ -920,7 +921,7 @@ int _hx_std_sys_get_pid()
 {
 #   ifdef NEKO_WINDOWS
    return (int)(GetCurrentProcessId());
-#elif defined(EPPC) || defined(HX_NX)
+#elif defined(EPPC) || defined(HAXE3DS)
    return (1);
 #   else
    return (getpid());

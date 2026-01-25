@@ -168,7 +168,7 @@ typedef char HX_CHAR;
 #ifdef HXCPP_BIG_ENDIAN
 
 #define HX_HCSTRING(s,h0,h1,h2,h3) ::String( const_cast<char *>((h3 h2 h1 h0 "\x80\x10\x00\x00" s)) + 8 , sizeof(s)/sizeof(char)-1)
-#define HX_(s,h0,h1,h2,h3) ::String( const_cast<char *>(( HX_HEX_QUOTE(h3) HX_HEX_QUOTE(h2) HX_HEX_QUOTE(h1) HX_HEX_QUOTE(h0) "\x80\x10\x00\x00" s )) + 8 , sizeof(s)/sizeof(char)-1)
+#define HX_(s,h0,h1,h2,h3) ::String::create(const_cast<char*>(s), sizeof(s))
 #define HX_STRINGI(s,len) ::String( const_cast<char *>(("\x80\x00\x00\x00" s)) + 4 ,len)
 #define HX_W(s,h0,h1) ::String( const_cast<char16_t *>(( HX_HEX_QUOTE_W(h1) HX_HEX_QUOTE_W(h0) u"\x8030\x0000" s )) + 4, sizeof(s)/2-1)
 

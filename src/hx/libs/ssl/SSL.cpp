@@ -18,26 +18,21 @@ typedef int SOCKET;
 #include <Security/Security.h>
 #endif
 
-#if defined(HX_NX)
-#include <switch.h>
-#include <stdlib.h>
-#endif
-
 typedef size_t socket_int;
 
 #define SOCKET_ERROR (-1)
 #define NRETRYS	20
 
-#include "mbedtls/error.h"
-#include "mbedtls/entropy.h"
-#include "mbedtls/ctr_drbg.h"
-#include "mbedtls/md.h"
-#include "mbedtls/pk.h"
-#include "mbedtls/oid.h"
-#include "mbedtls/x509_crt.h"
-#include "mbedtls/ssl.h"
-#include "mbedtls/net.h"
-#include "mbedtls/debug.h"
+#include <mbedtls/error.h>
+#include <mbedtls/entropy.h>
+#include <mbedtls/ctr_drbg.h>
+#include <mbedtls/md.h>
+#include <mbedtls/pk.h>
+#include <mbedtls/oid.h>
+#include <mbedtls/x509_crt.h>
+#include <mbedtls/ssl.h>
+#include <mbedtls/net.h>
+#include <mbedtls/debug.h>
 
 #define val_ssl(o)	((sslctx*)o.mPtr)
 #define val_conf(o)	((sslconf*)o.mPtr)
@@ -577,45 +572,6 @@ Dynamic _hx_ssl_cert_load_defaults(){
 	}
 	CFRelease(keychain);
 	if( chain != NULL )
-		return chain;
-#elif defined(HX_NX) // Implementation for NX (Thanks CRobes on Discord for telling me that I had to modify this function)
-	sslcert *chain = NULL;
-	if (R_SUCCEEDED(sslInitialize(3)))
-	{
-		u32 id = SslCaCertificateId_All;
-		u32 buf_size = 0;
-
-		if (R_SUCCEEDED(sslGetCertificateBufSize(&id, 1, &buf_size)))
-		{
-			void *buf = malloc(buf_size);
-
-			if (buf)
-			{
-				u32 count = 0;
-				if (R_SUCCEEDED(sslGetCertificates(buf, buf_size, &id, 1, &count)))
-				{
-					SslBuiltInCertificateInfo *infos = (SslBuiltInCertificateInfo *)buf;
-
-					for (u32 i = 0; i < count; i++)
-					{
-						if (infos[i].status == SslTrustedCertStatus_EnabledTrusted)
-						{
-							if (chain == NULL)
-							{
-								chain = new sslcert();
-								chain->create(NULL);
-							}
-							mbedtls_x509_crt_parse_der(chain->c, (unsigned char *)infos[i].cert_data, (size_t)infos[i].cert_size);
-						}
-					}
-				}
-				free(buf);
-			}
-		}
-		sslExit();
-	}
-
-	if (chain != NULL)
 		return chain;
 #endif
 	return null();

@@ -26,13 +26,13 @@
       </section>
 
       <section if="nx">
-         <!-- Nintendo Switch DevKitA64 paths -->
-         <path name="${DEVKITPRO}/devkitA64/bin/" />
-         <path name="${DEVKITPRO}/tools/bin/" />
-         <set name='CXX' value='aarch64-none-elf-g++' />
-         <set name='HXCPP_STRIP' value='aarch64-none-elf-strip' />
-         <set name='HXCPP_AR' value='aarch64-none-elf-ar' />
-         <set name='HXCPP_RANLIB' value='aarch64-none-elf-ranlib' />
+         <!-- Nintendo 3DS DevKitA64 paths -->
+         <path name="/opt/devkitpro/devkitARM/bin/" />
+         <path name="/opt/devkitpro/tools/bin/" />
+         <set name='CXX' value='arm-none-eabi-g++' />
+         <set name='HXCPP_STRIP' value='arm-none-eabi-strip' />
+         <set name='HXCPP_AR' value='arm-none-eabi-ar' />
+         <set name='HXCPP_RANLIB' value='arm-none-eabi-ranlib' />
       </section>
       
    </section>
@@ -53,38 +53,55 @@
       <cppflag value="-frtti"/>
       <cppflag value="-std=c++11" if="HXCPP_CPP11" />
       <cppflag value="-std=c++17" if="HXCPP_CPP17"/>
-      <flag value="-g" if="debug"/>
-      <flag value="-O2" unless="debug"/>
+      <flag value="-g"/>
 
-      <!-- Nintendo Switch specific flags -->
+      <!-- Nintendo 3DS specific flags -->
       <section if="nx">
-         <flag value='-march=armv8-a+crc+crypto' />
+         <flag value='-march=armv6k' />
          <flag value='-mtp=soft' />
-         <flag value='-mtune=cortex-a57' />
-         <flag value='-fPIE' />
-         <flag value='-Wall' />
+         <flag value='-mtune=mpcore' />
+         <flag value='-mfloat-abi=hard' />
+         <flag value='-w' />
          <!-- <flag value='-Wreorder' />
          <flag value='-Wstrict-aliasing' />
          <flag value='-Winvalid-offsetof' />
          <flag value='-Wsign-compare' />
          <flag value='-Wunknown-pragmas' /> -->
-         <flag value='-D__SWITCH__' />
-         <flag value='-D__NX__' />
+         <flag value='-D__3DS__' />
          <flag value='-D__TM_GMTOFF=tm_gmtoff'/>
          <flag value='-D__POSIX_VISIBLE'/>
          <flag value='-D__BSD_VISIBLE'/>
-         <flag value="-DHX_NX"/>
+         <flag value="-DHAXE3DS"/>
 
          <!-- HashLink flags -->
          <!-- <flag value="-DHL_CONSOLE"/>
          <flag value="-DHL_NX"/> -->
 
+         <flag value='-I/opt/devkitpro/libctru/include'/>
+         <flag value='-I/opt/devkitpro/portlibs/3ds/include'/>
+         <flag value='-I/opt/devkitpro/portlibs/armv6k/include'/>
+
+         <flag value='-I"/home/nael/Downloads/hxcpp3ds/export/include"'/>
+<flag value='-L/opt/devkitpro/portlibs/3ds/lib'/>
+<flag value='-I/opt/devkitpro/portlibs/3ds/include'/>
+<flag value='-lHAXE3DS'/>
+<flag value='-lmbedtls'/>
+<flag value='-lmbedx509'/>
+<flag value='-lmbedcrypto'/>
+<flag value='-lz'/>
+<flag value='-lcitro3d'/>
+<flag value='-lcitro2d'/>
+<flag value='-lcitro3d'/>
+<flag value='-lcitro2d'/>
+<flag value='-lctru'/>
+<flag value='-lm'/>
+
          <flag value='-ffunction-sections' />
          <flag value='-fexceptions' />
          <flag value='-fpermissive' />
          <flag value='-static' />
-         <flag value="-I${DEVKITPRO}/libnx/include"/>
       </section>
+
       <flag value="-fpic" unless="nx" />
       <flag value="-fPIC" unless="nx"/>
 
@@ -115,13 +132,13 @@
       <flag value="-m64" if="HXCPP_M64" unless="noM64 || nx" />
       <flag value="-Xlinker"/>
       <flag value="--no-undefined" unless="HXCPP_ALLOW_UNDEFINED" />
-      <flag value="-debug" if="debug"/>
       <lib name="-ldl"/>
 
       <section if="nx">
-         <lib name="-lnx"/>
-         <flag value="-specs=switch.specs"/>
-         <lib name="-L${DEVKITPRO}/libnx/lib"/>
+         <flag value="-specs=3dsx.specs"/>
+         <lib name="-L/opt/devkitpro/libctru/lib"/>
+         <lib name="-L/opt/devkitpro/portlibs/3ds/lib"/>
+         <lib name="-I/opt/devkitpro/portlibs/3ds/include"/>
       </section>
 
       <ext value=".dso"/>
@@ -131,7 +148,6 @@
    <linker id="exe" exe="g++" if="linux">
       <exe name="${CXX}" if="CXX" />
       <fromfile value="" if="GCC_OLD" />
-      <flag value="-debug" if="debug"/>
       <flag value="-rdynamic"/>
       <flag value="-m32" unless="noM32"/>
       <flag value="-m64" if="HXCPP_M64" unless="noM64 || nx" />

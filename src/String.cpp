@@ -771,8 +771,7 @@ String String::create(const char *inString,int inLength)
       return String();
 
    #ifdef HX_SMART_STRINGS
-   if (inLength<0)
-      for(inLength=0; inString[inLength]; inLength++) { }
+   inLength = strlen(inString);
 
    const unsigned char *c = (const unsigned char *)inString;
    for(int i=0;i<inLength;i++)

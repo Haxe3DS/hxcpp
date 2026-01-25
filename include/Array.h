@@ -1,5 +1,6 @@
 #ifndef HX_ARRAY_H
 #define HX_ARRAY_H
+
 #include <cpp/FastIterator.h>
 
 // --- hx::ReturnNull ------------------------------------------------------
@@ -452,7 +453,6 @@ inline bool arrayElemEq<Dynamic>(const Dynamic &a, const Dynamic &b) {
 }
 }
 
-
 template<typename ELEM_>
 class Array_obj : public hx::ArrayBase
 {
@@ -872,6 +872,11 @@ public:
       ELEM_ &elem = *(ELEM_ *)(mBase + inIndex*sizeof(ELEM_));
       elem = ELEM_(inValue);
       if (hx::ContainsPointers<ELEM_>()) { HX_OBJ_WB_GET(this,hx::PointerOf(elem)); }
+   }
+
+   ~Array_obj() {
+      if (mBase) delete mBase;
+      memset(this, 0, sizeof(Array_obj));
    }
 };
 

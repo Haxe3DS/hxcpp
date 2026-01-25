@@ -78,11 +78,12 @@ void DebuggerTrap()
    {
       triggeredOnce = true;
 
-      #if __has_builtin(__builtin_trap)
-      __builtin_trap();
-      #else
-      *(int *)0=0;
-      #endif
+      //#if __has_builtin(__builtin_trap)
+      //__builtin_trap();
+      //#else
+      //*(int *)0=0;
+      //#endif
+      // no
    }
 }
 }
@@ -6577,12 +6578,11 @@ bool TryExitGCFreeZone()
    #endif
 }
 
-
 void ExitGCFreeZone()
 {
    #ifndef HXCPP_SINGLE_THREADED_APP
-      LocalAllocator *tla = GetLocalAlloc();
-      tla->ExitGCFreeZone();
+   LocalAllocator *tla = GetLocalAlloc();
+   if (tla) tla->cmd();
    #endif
 }
 
@@ -6682,6 +6682,8 @@ void *InternalNew(int inSize,bool inIsObject)
    else
    {
       LocalAllocator *tla = GetLocalAlloc();
+      if (!tla)
+         tla = new LocalAllocator(0);
 
       if (inIsObject)
       {
@@ -6859,7 +6861,7 @@ void RegisterCurrentThread(void *inTopOfStack)
 void UnregisterCurrentThread()
 {
    LocalAllocator *local = (LocalAllocator *)(hx::ImmixAllocator *)tlsStackContext;
-   local->Release();
+   if (local != nullptr) local->Release();
 }
 
 void RegisterVTableOffset(int inOffset)

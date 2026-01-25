@@ -374,8 +374,8 @@ String __internal_to_string(struct tm time)
 {
    // YYYY-MM-DD hh:mm:ss
 
-   char buf[100];
-   strftime(buf,100, "%Y-%m-%d %H:%M:%S", &time);
+   char buf[22];
+   strftime(buf,22, "%Y-%m-%d %H:%M:%S", &time);
    return String::create(buf);
 }
 

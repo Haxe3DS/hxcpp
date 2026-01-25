@@ -167,9 +167,9 @@ class Builder
                   validArchs.set("x86", ["-Diphonesim"].concat(staticFlags) );
                   validArchs.set("x86_64", ["-Diphonesim", "-DHXCPP_M64"].concat(staticFlags) );
 
-               // Custom for Nintendo Switch (NX)
-               case "nx":
-                  validArchs.set("arm64", ["-Dnx", "-DHXCPP_ARM64", "-DHXCPP_M64"].concat(staticFlags));
+               // Custom for Nintendo 3DS
+               case "3ds":
+                  validArchs.set("arm64", ["-D3ds", "-DHXCPP_ARM7"].concat(staticFlags));
 
                case "android":
                   if( archs.length == 0 )

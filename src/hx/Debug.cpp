@@ -72,6 +72,9 @@ static void setStaticHandler(Dynamic &inStore, Dynamic inValue)
 
 static void CriticalErrorHandler(String inErr, bool allowFixup)
 {
+   #ifdef __3DS__
+   return; // haxe3ds already has its own error handler, we're not using haxe way
+   #endif
 #ifdef HXCPP_DEBUGGER
    if (allowFixup && __hxcpp_dbg_fix_critical_error(inErr))
       return;
@@ -96,7 +99,7 @@ static void CriticalErrorHandler(String inErr, bool allowFixup)
         MB_ICONEXCLAMATION|MB_OK);
 #endif
 
-    // Good when using gdb, and to collect a core ...
+   // Good when using gdb, and to collect a core ...
     #if __has_builtin(__builtin_trap)
     __builtin_trap();
     #else
@@ -480,7 +483,7 @@ HXCPP_EXTERN_CLASS_ATTRIBUTES void NullReference(const char *type, bool allowFix
       return;
 #endif
 
-__hxcpp_dbg_checkedThrow(HX_CSTRING("Null Object Reference"));
+   __hxcpp_dbg_checkedThrow(HX_CSTRING("Null Object Reference"));
 }
 
 

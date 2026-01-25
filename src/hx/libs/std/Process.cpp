@@ -11,11 +11,15 @@
 #   include <memory.h>
 #   include <errno.h>
 #   include <signal.h>
-#   if defined(ANDROID) || defined(BLACKBERRY) || defined(EMSCRIPTEN) || defined(HX_NX)
+#   if defined(ANDROID) || defined(BLACKBERRY) || defined(EMSCRIPTEN) || defined(HAXE3DS)
 #      include <sys/wait.h>
 #   elif !defined(NEKO_MAC)
 #      include <wait.h>
 #   endif
+#endif
+
+#ifdef HAXE3DS
+#include <3ds.h>
 #endif
 
 #include <stdio.h>
@@ -102,7 +106,7 @@ struct vprocess : public hx::Object
 
 vprocess *getProcess(Dynamic handle)
 {
- #if defined(HX_NX)
+ #if defined(HAXE3DS)
    return null();
  #else
    vprocess *p = dynamic_cast<vprocess *>(handle.mPtr);
@@ -194,7 +198,7 @@ static String quoteString(String v)
 **/
 Dynamic _hx_std_process_run( String cmd, Array<String> vargs, int inShowParam )
 {
-   #if defined(APPLETV) || defined(HX_APPLEWATCH) || defined(HX_NX)
+   #if defined(APPLETV) || defined(HX_APPLEWATCH) || defined(HAXE3DS)
    return null();
 
    #else
@@ -352,7 +356,7 @@ Dynamic _hx_std_process_run( String cmd, Array<String> vargs, int inShowParam )
 int _hx_std_process_stdout_read( Dynamic handle, Array<unsigned char> buf, int pos, int len )
 {
 
-   #if defined(HX_NX)
+   #if defined(HAXE3DS)
       return 0;
    #else
 
@@ -388,7 +392,7 @@ int _hx_std_process_stdout_read( Dynamic handle, Array<unsigned char> buf, int p
 **/
 int _hx_std_process_stderr_read( Dynamic handle, Array<unsigned char> buf, int pos, int len )
 {
-   #if defined(HX_NX)
+   #if defined(HAXE3DS)
       return 0;
    #else
 
@@ -423,7 +427,7 @@ int _hx_std_process_stderr_read( Dynamic handle, Array<unsigned char> buf, int p
 **/
 int _hx_std_process_stdin_write( Dynamic handle, Array<unsigned char> buf, int pos, int len )
 {
-   #if defined(HX_NX)
+   #if defined(HAXE3DS)
       return 0;
    #else
 
@@ -459,7 +463,7 @@ int _hx_std_process_stdin_write( Dynamic handle, Array<unsigned char> buf, int p
 void _hx_std_process_stdin_close( Dynamic handle )
 {
 
-   #if defined(HX_NX)
+   #if defined(HAXE3DS)
       return;
    #else
 
@@ -485,9 +489,8 @@ void _hx_std_process_stdin_close( Dynamic handle )
 #if (HXCPP_API_LEVEL > 420)
 Dynamic _hx_std_process_exit( Dynamic handle, bool block )
 {
-
-   #if defined(HX_NX)
-      return null();
+   #if defined(HAXE3DS)
+   return null();
    #else
 
    vprocess *p = getProcess(handle);
@@ -543,7 +546,7 @@ Dynamic _hx_std_process_exit( Dynamic handle, bool block )
 int _hx_std_process_exit( Dynamic handle )
 {
 
-#if defined(HX_NX)
+#if defined(HAXE3DS)
    return 0;
 #else
 
@@ -587,8 +590,10 @@ int _hx_std_process_exit( Dynamic handle )
 **/
 int _hx_std_process_pid( Dynamic handle )
 {
-#if defined(HX_NX)
-   return 0;
+#if defined(HAXE3DS)
+   u32 out;
+   svcGetProcessId(&out, (Handle)CUR_PROCESS_HANDLE);
+   return (int)out;
 #else
 
    vprocess *p = getProcess(handle);
@@ -603,7 +608,7 @@ int _hx_std_process_pid( Dynamic handle )
 
 void _hx_std_process_kill( Dynamic handle )
 {
-#if defined(HX_NX)
+#if defined(HAXE3DS)
    return;
 #else
 

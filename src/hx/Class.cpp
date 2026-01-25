@@ -220,9 +220,7 @@ bool Class_obj::__HasField(const String &inString)
       return true;
 
    if (mStatics.mPtr)
-      for(int s=0;s<mStatics->size();s++)
-         if (mStatics[s]==inString)
-            return true;
+      return mStatics->contains(inString);
    return false;
 }
 
