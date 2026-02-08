@@ -1,5 +1,4 @@
 #include <hxcpp.h>
-#include <limits>
 #include <hxMath.h>
 
 #include <stdlib.h>
@@ -24,10 +23,10 @@ bool Math_obj::isNaN(double inX)
 bool Math_obj::isFinite(double inX)
   { return inX==inX && inX!=NEGATIVE_INFINITY && inX!=POSITIVE_INFINITY; }
 
-double Math_obj::NaN = std::numeric_limits<double>::quiet_NaN();
-double Math_obj::NEGATIVE_INFINITY = -std::numeric_limits<double>::infinity();
+double Math_obj::NaN = __builtin_nan("");
+double Math_obj::NEGATIVE_INFINITY = -__builtin_huge_val();
 double Math_obj::PI = 3.1415926535897932385;
-double Math_obj::POSITIVE_INFINITY = std::numeric_limits<double>::infinity();
+double Math_obj::POSITIVE_INFINITY = __builtin_huge_val();
 
 #ifdef min
 #undef min
@@ -182,10 +181,9 @@ double DoubleMod(double inLHS,double inRHS)
    return fmod(inLHS,inRHS);
 }
 
-double hxZero = 0.0;
 double DivByZero(double d)
 {
-   return d/hxZero;
+   return d/0.0;
 }
 
 

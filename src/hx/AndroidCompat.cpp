@@ -24,12 +24,12 @@ char * stpcpy(char *dest, const char *src)
 }
 
 
-int rand() { return lrand48(); }
+inline int rand() { return lrand48(); }
 
-void srand(unsigned int x) { srand48(x); }
+inline void srand(unsigned int x) { srand48(x); }
 
 
-double atof(const char *nptr)
+inline double atof(const char *nptr)
 {
     return (strtod(nptr, 0));
 }

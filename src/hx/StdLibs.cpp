@@ -136,12 +136,12 @@ String __hxcpp_resource_string(String inName)
             const unsigned char *p = reso->mData;
             for(int i=0;i<reso->mDataLength;i++)
                if (p[i]>127)
-                  return String::create((const char *)p, reso->mDataLength);
+                  return String((const char *)p, reso->mDataLength);
             #endif
             return String((const char *) reso->mData, reso->mDataLength );
          }
          #else
-            return String::create((const char *) reso->mData, reso->mDataLength );
+            return String((const char *) reso->mData, reso->mDataLength );
          #endif
       }
 
@@ -156,9 +156,7 @@ String __hxcpp_resource_string(String inName)
                if (p[i]>127)
                   return _hx_utf8_to_utf16(p, reso->mDataLength,false);
             #endif
-            return String((const char *) reso->mData, reso->mDataLength );
-
-            return String((const char *) reso->mData, reso->mDataLength );
+            return String((const char*)reso->mData, reso->mDataLength );
          }
    }
    return null();
@@ -197,7 +195,6 @@ Array<unsigned char> __hxcpp_resource_bytes(String inName)
 extern "C" void __hxcpp_lib_main();
 namespace hx
 {
-   static std::string initReturnBuffer;
    const char *Init(bool stayAttached)
    {
       try
@@ -210,12 +207,7 @@ namespace hx
       catch(Dynamic e)
       {
          HX_TOP_OF_STACK
-         if (!stayAttached)
-         {
-            initReturnBuffer = e->toString().utf8_str();
-            SetTopOfStack(0,true);
-            return initReturnBuffer.c_str();
-         }
+         if (!stayAttached) SetTopOfStack(0,true);
          return e->toString().utf8_str();
       }
    }
@@ -236,10 +228,7 @@ double __hxcpp_drand()
 
 int __hxcpp_irand(int inMax)
 {
-   unsigned int lo = rand() & 0xfff;
-   unsigned int mid = rand() & 0xfff;
-   unsigned int hi = rand() & 0xff;
-   return (lo | (mid<<12) | (hi<<24) ) % inMax;
+   return rand() % inMax;
 }
 
 #ifdef HX_WINDOWS
@@ -301,7 +290,6 @@ void __trace(Dynamic inObj, Dynamic info)
    if (inObj != null())
       text = inObj->toString();
 
-
    hx::strbuf convertBuf;
    if (info==null())
    {
@@ -309,16 +297,17 @@ void __trace(Dynamic inObj, Dynamic info)
    }
    else
    {
-      const char *filename = Dynamic((info)->__Field(HX_CSTRING("fileName"), HX_PROP_DYNAMIC))->toString().utf8_str(0,false);
+      const char *filename = Dynamic((info)->__Field(HX_CSTRING("fileName"), HX_PROP_DYNAMIC))->toString().c_str();
       int line = Dynamic((info)->__Field( HX_CSTRING("lineNumber") , HX_PROP_DYNAMIC))->__ToInt();
 
       //PRINTF("%s:%d: %s\n", filename, line, text.raw_ptr() ? text.out_str(&convertBuf) : "null");
       PRINTF("%s:%d: %s\n", filename, line, text.raw_ptr() ? text.out_str(&convertBuf) : "null");
    }
-   fflush(stdout);
+   // fflush not needed
+   //fflush(stdout);
 }
 
-void __hxcpp_exit(int inExitCode)
+inline void __hxcpp_exit(int inExitCode)
 {
    exit(inExitCode);
 }
@@ -546,6 +535,9 @@ LEADINGWHITE:
 #endif
 Array<String> __get_args()
 {
+   #ifdef HAXE3DS
+   return null();
+   #else
    Array<String> result(0,0);
    if (_hxcpp_argc)
    {
@@ -601,20 +593,18 @@ Array<String> __get_args()
    #endif
    #endif
    return result;
+   #endif
 }
 
 
 void __hxcpp_print_string(const String &inV)
 {
-   hx::strbuf convertBuf;
-   PRINTF("%s", inV.out_str(&convertBuf) );
+   PRINTF("%s", inV.c_str());
 }
 
 void __hxcpp_println_string(const String &inV)
 {
-   hx::strbuf convertBuf;
-   PRINTF("%s\n", inV.out_str(&convertBuf));
-   fflush(stdout);
+   PRINTF("%s\n", inV.c_str());
 }
 
 

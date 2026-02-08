@@ -53,8 +53,7 @@
       <cppflag value="-frtti"/>
       <cppflag value="-std=c++11" if="HXCPP_CPP11" />
       <cppflag value="-std=c++17" if="HXCPP_CPP17"/>
-      <flag value="-g"/>
-
+      
       <!-- Nintendo 3DS specific flags -->
       <section if="nx">
          <flag value='-march=armv6k' />
@@ -72,15 +71,15 @@
          <flag value='-D__POSIX_VISIBLE'/>
          <flag value='-D__BSD_VISIBLE'/>
          <flag value="-DHAXE3DS"/>
-
+         
          <!-- HashLink flags -->
          <!-- <flag value="-DHL_CONSOLE"/>
          <flag value="-DHL_NX"/> -->
-
+         
          <flag value='-I[DKP_PATH]/libctru/include'/>
          <flag value='-I[DKP_PATH]/portlibs/3ds/include'/>
          <flag value='-I[DKP_PATH]/portlibs/armv6k/include'/>
-
+         
          [HAXE3DS_FLAGS]
 
          <flag value='-ffunction-sections' />
