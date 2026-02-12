@@ -53,8 +53,7 @@
       <cppflag value="-frtti"/>
       <cppflag value="-std=c++11" if="HXCPP_CPP11" />
       <cppflag value="-std=c++17" if="HXCPP_CPP17"/>
-      <flag value="-g"/>
-
+      
       <!-- Nintendo 3DS specific flags -->
       <section if="nx">
          <flag value='-march=armv6k' />
@@ -72,29 +71,29 @@
          <flag value='-D__POSIX_VISIBLE'/>
          <flag value='-D__BSD_VISIBLE'/>
          <flag value="-DHAXE3DS"/>
-
+         
          <!-- HashLink flags -->
          <!-- <flag value="-DHL_CONSOLE"/>
          <flag value="-DHL_NX"/> -->
-
+         
          <flag value='-I/opt/devkitpro/libctru/include'/>
          <flag value='-I/opt/devkitpro/portlibs/3ds/include'/>
          <flag value='-I/opt/devkitpro/portlibs/armv6k/include'/>
-
-         <flag value='-I"/home/nael/Downloads/hxcpp3ds/export/include"'/>
-<flag value='-L/opt/devkitpro/portlibs/3ds/lib'/>
-<flag value='-I/opt/devkitpro/portlibs/3ds/include'/>
-<flag value='-lHAXE3DS'/>
-<flag value='-lmbedtls'/>
-<flag value='-lmbedx509'/>
-<flag value='-lmbedcrypto'/>
+         
+         <flag value='-lHAXE3DS'/>
+<flag value='-I"/home/nael/Downloads/hxcpp3ds/export/include"'/>
+<flag value='-L"/opt/devkitpro/portlibs/3ds/lib"'/>
+<flag value='-I"/opt/devkitpro/portlibs/3ds/include"'/>
 <flag value='-lz'/>
+<flag value='-g'/>
+<flag value='-O2'/>
 <flag value='-lcitro3d'/>
 <flag value='-lcitro2d'/>
 <flag value='-lcitro3d'/>
 <flag value='-lcitro2d'/>
 <flag value='-lctru'/>
 <flag value='-lm'/>
+
 
          <flag value='-ffunction-sections' />
          <flag value='-fexceptions' />

@@ -120,22 +120,18 @@ void __int_hash_set_float(HX_MAP_THIS_ARG,int inKey,Float inValue)
    if (!hash)
    {
       hash = new IntHashFloat();
-      ioHash = hash;
-      HX_OBJ_WB_GET(owner,hash);
    }
    else if (hash->store==hashString || hash->store==hashInt64)
    {
       hash = hash->convertStore(hashObject);
-      ioHash = hash;
-      HX_OBJ_WB_GET(owner,hash);
    }
    else if (hash->store==hashInt)
    {
       hash = hash->convertStore(hashFloat);
-      ioHash = hash;
-      HX_OBJ_WB_GET(owner,hash);
    }
-
+   
+   ioHash = hash;
+   HX_OBJ_WB_GET(owner,hash);
    hash->set(inKey,inValue);
 }
 
@@ -147,16 +143,14 @@ void __int_hash_set_string(HX_MAP_THIS_ARG,int inKey, ::String inValue)
    if (!hash)
    {
       hash = new IntHashString();
-      ioHash = hash;
-      HX_OBJ_WB_GET(owner,hash);
    }
    else if (hash->store==hashInt || hash->store==hashFloat || hash->store==hashInt64)
    {
       hash = hash->convertStore(hashObject);
-      ioHash = hash;
-      HX_OBJ_WB_GET(owner,hash);
    }
-
+   
+   ioHash = hash;
+   HX_OBJ_WB_GET(owner,hash);
    hash->set(inKey,inValue);
 }
 
@@ -166,22 +160,18 @@ void __int_hash_set_int64(HX_MAP_THIS_ARG, int inKey, cpp::Int64 inValue)
    if (!hash)
    {
       hash = new IntHashInt64();
-      ioHash = hash;
-      HX_OBJ_WB_GET(owner,hash);
    }
    else if (hash->store==hashInt)
    {
       hash = hash->convertStore(hashInt64);
-      ioHash = hash;
-      HX_OBJ_WB_GET(owner,hash);
    }
    else if (hash->store==hashString || hash->store==hashFloat)
    {
       hash = hash->convertStore(hashObject);
-      ioHash = hash;
-      HX_OBJ_WB_GET(owner,hash);
    }
-
+   
+   ioHash = hash;
+   HX_OBJ_WB_GET(owner,hash);
    hash->set(inKey, inValue);
 }
 

@@ -1225,8 +1225,7 @@ String String::createPermanent(const char *inUtf8, int length)
    }
    else
    {
-      String temp = create(inUtf8,length);
-      return temp.makePermanent();
+      return create(inUtf8,length).makePermanent();
    }
 }
 
@@ -1260,16 +1259,16 @@ static int TIndexOf(int s, const T *str, int strLen, const T *sought, int sought
 
 static bool StrMatch(const char16_t *src0, const char *src1, int len)
 {
-   for(int i=0;i<len;i++)
+   /*for(int i=0;i<len;i++)
       if (src0[i]!=src1[i])
-         return false;
-   return true;
+         return false;*/
+   return memcmp(src0, src1, len) == 0;
 }
 
 
 int String::indexOf(const String &inValue, Dynamic inStart) const
 {
-   if (__s==0)
+   if (!__s)
       return -1;
    int s = inStart==null() ? 0 : inStart->__ToInt();
    int l = inValue.length;
@@ -1572,7 +1571,7 @@ const char * String::utf8_str(hx::IStringAlloc *inBuffer,bool throwInvalid, int 
    if (isUTF16Encoded())
       return TConvertToUTF8(__w,byteLength,inBuffer,throwInvalid);
    #endif
-   if (byteLength != 0)
+   if (byteLength)
    {
       *byteLength = length;
    }
